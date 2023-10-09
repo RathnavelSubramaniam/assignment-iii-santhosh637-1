@@ -1,0 +1,216 @@
+---
+title: "Record(Chapter-2 =>Question 8)"
+author: "santhosh s"
+date: "2023-09-26"
+output: html_document
+---
+
+8. This exercise relates to the College data set, which can be found in
+the file College.csv. It contains a number of variables for 777 different
+universities and colleges in the US. The variables are
+
+
+(a) Use the read.csv() function to read the data into R. Call the
+loaded data college. Make sure that you have the directory set
+to the correct location for the data.
+```{r}
+library(ISLR)
+attach(College)
+college<-College
+
+View(college)
+
+# instead of loading external csv file we have a file called College in our ISLR package 
+
+```
+
+(b) Look at the data using the fix() function. You should notice
+that the first column is just the name of each university. We don’t
+really want R to treat this as data. However, it may be handy to
+have these names for later. Try the following commands:
+```{r}
+college<-college[,-1]
+View(college)
+
+```
+
+(c) i. Use the summary() function to produce a numerical summary
+of the variables in the data set.
+```{r}
+summary(college)
+```
+
+ii. Use the pairs() function to produce a scatterplot matrix of
+the first ten columns or variables of the data. Recall that
+you can reference the first ten columns of a matrix A using
+A[,1:10].
+```{r}
+pairs(college[,1:10])
+
+```
+
+iii. Use the plot() function to produce side-by-side boxplots of
+Outstate versus Private.
+```{r}
+plot(College$Private,college$Outstate,xlab = "Private University", ylab = "Tuition in $",col = c("red","green"))
+```
+
+iv. Create a new qualitative variable, called Elite, by binning
+the Top10perc variable. We are going to divide universities
+into two groups based on whether or not the proportion
+of students coming from the top 10 % of their high school
+classes exceeds 50 %.
+```{r}
+Elite <- rep("No", nrow(college))
+Elite[college$Top10perc > 50] <- "Yes"
+Elite <- as.factor(Elite)
+college <- data.frame(college, Elite)
+```
+Use the summary() function to see how many elite universities there are. 
+```{r}
+summary(college$Elite)
+```
+
+Now use the plot() function to produce side-by-side boxplots of Outstate versus Elite.
+```{r}
+plot(college$Elite, college$Outstate, 
+     xlab = "Elite University", ylab = "Tuition in $", col=c("Blue","Red"))
+```
+
+v. Use the hist() function to produce some histograms with
+differing numbers of bins for a few of the quantitative variables. You may find the command par(mfrow=c(2,2)) useful:it will divide the print window into four regions so that four
+plots can be made simultaneously. Modifying the arguments
+to this function will divide the screen in other ways.
+```{r}
+par(mfrow=c(2,2))
+hist(college$Accept, xlab = "Applications Accepted", main = "")
+hist(college$perc.alumni, col=2, xlab = "% of alumni who donate", main = "")
+hist(college$S.F.Ratio, col=3, breaks=10, xlab = "Student/faculty ratio", main = "")
+hist(college$Expend, breaks=100, col=7,xlab = "Instructional expenditure per student", main = "")
+```
+
+vi. Continue exploring the data, and provide a brief summary
+of what you discover.
+```{r}
+# what is the university with the most students in the top 10% of class
+row.names(college)[which.max(college$Top10perc)]  
+#Acceptance Rate
+acceptance_rate <- college$Accept / college$Apps
+
+# what university has the Highest acceptance rate
+row.names(college)[which.max(acceptance_rate)]  
+```
+
+
+
+10. This exercise involves the Boston housing data set.
+(a) To begin, load in the Boston data set. The Boston data set is
+part of the MASS library in R.
+```{r}
+library(MASS)
+?Boston
+attach(Boston)
+```
+
+Now the data set is contained in the object Boston.
+How many rows are in this data set? How many columns?
+```{r}
+dim(Boston)
+```
+
+What do the rows and columns represent?
+```{r}
+#Each row represent the set of predictor obeservations for a given Neighborhood in Boston. Each column represent each predictor variable for which an observation was made in 506 neighborhoods of Boston.
+```
+
+(b) Make some pairwise scatterplots of the predictors (columns) in
+this data set. Describe your findings.
+```{r}
+pairs(Boston)
+```
+
+(c) Are any of the predictors associated with per capita crime rate?
+If so, explain the relationship.
+```{r}
+plot(Boston$crim ~ Boston$age,
+     log = 'xy',
+     col = 'steelblue')
+#age: As the proportion of owner-occupied units built prior to 1940 increases, the Per Capita Crime Rate increases.
+```
+
+
+```{r}
+plot(Boston$crim ~ Boston$dis,
+     log = 'xy',
+     col = 'green')
+#dis: As the weighted mean of distances to five Boston employment centres increases, the Per Capita Crime Rate decreases.
+```
+
+
+```{r}
+plot(Boston$crim ~ Boston$lstat,
+     log = 'xy',
+     col = 'red')
+
+#lstat: As the lower status of the population (percent) increases, the Per Capita Crime Rate increases.
+```
+
+(d) Do any of the suburbs of Boston appear to have particularly
+high crime rates? Tax rates? Pupil-teacher ratios? Comment on
+the range of each predictor.
+```{r}
+hist(Boston$crim, breaks=25, col = "steelblue", main = "Histogram of Per Capita Crime Rate")
+#There are very few Boston suburbs with high crime rates.
+```
+
+```{r}
+hist(Boston$tax, breaks=25)
+# there is a large divide between suburbs with low tax rates and a peak at 660-680
+```
+
+
+```{r}
+hist(Boston$ptratio, breaks=25)
+```
+
+(e) How many of the suburbs in this data set bound the Charles
+river?
+```{r}
+sum(chas == 1)
+```
+(f) What is the median pupil-teacher ratio among the towns in this
+data set?
+```{r}
+summary(ptratio)
+```
+
+(g) Which suburb of Boston has lowest median value of owneroccupied homes? What are the values of the other predictorsfor that suburb, and how do those values compare to the overall
+ranges for those predictors? Comment on your findings.
+```{r}
+t(subset(Boston, medv == min(medv)))
+
+summary(Boston)
+
+#Based on the list above, suburb 399 can be classified as one of the least desirable places to live in Boston.
+```
+
+(h) In this data set, how many of the suburbs average more than
+seven rooms per dwelling? More than eight rooms per dwelling?
+Comment on the suburbs that average more than eight rooms
+per dwelling.
+```{r}
+sum(rm > 7)
+```
+
+
+```{r}
+sum(rm > 8)
+```
+
+
+```{r}
+dwelling_selection = subset(Boston, rm > 8)
+summary(dwelling_selection)
+
+```
+
