@@ -1,0 +1,166 @@
+---
+title: "Record(Chapter-3 =>Question 9,10)"
+author: "santhosh s"
+date: "2023-09-29"
+output: html_document
+---
+
+9. This question involves the use of multiple linear regression on the
+Auto data set.
+(a) Produce a scatterplot matrix which includes all of the variables
+in the data set.
+```{r}
+library(ISLR)
+
+auto<-Auto
+View(auto)
+pairs(auto)
+```
+
+(b) Compute the matrix of correlations between the variables using
+the function cor(). You will need to exclude the name variable, cor() which is qualitative.
+```{r}
+  cor(auto[, names(auto) !="name"])
+
+```
+
+(c) Use the lm() function to perform a multiple linear regression
+with mpg as the response and all other variables except name as
+the predictors. Use the summary() function to print the results.
+Comment on the output.
+```{r}
+attach(auto)
+lm_model = lm(mpg ~. -name, data = auto)
+summary(lm_model)
+```
+
+i. Is there a relationship between the predictors and the response?
+```{r}
+#Yes, there is. However, some predictors do not have a statistically significant effect on the response. R-squared value implies that 82% of the changes in the response can be explained by the predictors in this regression model.
+```
+
+ii. Which predictors appear to have a statistically significant
+relationship to the response?
+```{r}
+#displacement,origin, weight ,year
+```
+
+iii. What does the coefficient for the year variable suggest?
+```{r}
+# year suggest that mpg value increase  as every year, but other variables remains constant
+```
+
+(d) Use the plot() function to produce diagnostic plots of the linear
+regression fit. Comment on any problems you see with the fit.
+Do the residual plots suggest any unusually large outliers? Does
+the leverage plot identify any observations with unusually high
+leverage?
+```{r}
+par(mfrow = c(2,2))
+plot(lm_model)
+
+#The first graphs shows that there is a non-linear relationship between the response and the predictors,residuals are normally distributed and right skewed,
+
+```
+
+(e) Use the * and : symbols to fit linear regression models with
+interaction effects. Do any interactions appear to be statistically
+significant?
+```{r}
+lm_model2 <- lm(mpg ~ cylinders * displacement + horsepower * weight + acceleration * year, data = Auto[, 1:8])
+summary(lm_model2)
+
+#Interaction between displacement and weight is statistically significant, while the interaction between cylinders and displacement is not.
+
+```
+
+(f) Try a few different transformations of the variables, such as
+log(X), √
+X, X2. Comment on your findings.
+```{r}
+par(mfrow = c(2, 2))
+plot(log(horsepower), mpg)
+plot(sqrt(horsepower), mpg)
+plot((horsepower)^2, mpg)
+
+# By ploting log and sqrt values are more or less same but square vales is slightly chaging
+```
+
+```{r}
+#Log Transformation for Acceleration
+summary(lm(mpg ~ . -name + log(acceleration), data=auto))
+
+#Square Transform Horsepower
+
+summary(lm(mpg ~ . -name + I(horsepower)^2, data=auto))
+```
+
+10. This question should be answered using the Carseats data set.
+```{r}
+library("ISLR")
+?Carseats
+head(Carseats)
+```
+
+(a) Fit a multiple regression model to predict Sales using Price,
+Urban, and US.
+```{r}
+attach(Carseats)
+lm_fit = lm(Sales ~ Price+Urban+US, data= Carseats)
+summary(lm_fit)
+```
+
+(b) Provide an interpretation of each coefficient in the model. Be
+careful—some of the variables in the model are qualitative!
+```{r}
+#When price increases by $1000 and  sales decrease by 54.459 unit sales
+
+#A store’s sale is not affected by whether or not it is in a Urban area
+
+#A store in the US sales 1200 more carseats  than a store that is abroad.
+```
+
+(c) Write out the model in equation form, being careful to handle
+the qualitative variables properly.
+##Sales = 13.04 + -0.05 Price + -0.02 UrbanYes + 1.20 USYes
+```{r}
+lm2=lm(Sales ~ Price+Urban+US)
+summary(lm2)
+```
+
+(d) For which of the predictors can you reject the null hypothesis
+H0 : βj = 0?
+```{r}
+#According to p-value we can reject the null hypothesis for Price and Urban=Yes
+```
+
+(e) On the basis of your response to the previous question, fit a
+smaller model that only uses the predictors for which there is
+evidence of association with the outcome.
+```{r}
+lm_fit2 = lm(Sales ~ Price+US, data= Carseats)
+summary(lm_fit2)
+```
+
+(f) How well do the models in (a) and (e) fit the data?
+```{r}
+#Based on the  R Square values of the linear regressions, they both fit the data similarly, with linear regression from (e) fitting the data slightly better.
+
+
+```
+
+(g) Using the model from (e), obtain 95 % confidence intervals for
+the coefficient(s).
+```{r}
+confint(lm_fit2)
+```
+
+(h) Is there evidence of outliers or high leverage observations in the
+model from (e)?
+```{r}
+par(mfrow=c(2,2))
+plot(lm_fit2)
+
+#According to the model there is no outliers
+```
+
